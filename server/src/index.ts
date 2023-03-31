@@ -1,36 +1,27 @@
 import { MikroORM } from "@mikro-orm/core";
 import mikroOrmConfig from "./mikro-orm.config";
+import cors from "cors";
 import express from "express";
 import session from "express-session";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { createClient } from "redis";
-import {
-  PORT,
-  SESSION_SECRET,
-  ORIGIN,
-  __prod__,
-  REDIS_HOST,
-  REDIS_PORT,
-  REDIS_PW,
-} from "./config";
+import { PORT, SESSION_SECRET, __prod__ } from "./config";
 import { HelloResolver, PostResolver, UserResolver } from "./resolvers";
 import RedisStore from "connect-redis";
+import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
 
 const main = async () => {
   const app = express();
   const port = PORT || 4000;
 
-  const redisClient = createClient({
-    socket: {
-      host: REDIS_HOST,
-      port: parseInt(REDIS_PORT!),
-    },
-    password: REDIS_PW,
-  });
-
+  const redisClient = createClient();
+  redisClient
+    .connect()
+    .then(() => console.log("------- connected to redis -------"))
+    .catch(console.error);
   redisClient.on("error", (err) => {
-    console.log("Error " + err);
+    console.log("Error: " + err);
   });
 
   const redisStore = new (RedisStore as any)({
@@ -39,6 +30,19 @@ const main = async () => {
     disableTTL: true,
   });
 
+  app.set("trust proxy", !__prod__);
+
+  app.use(
+    cors({
+      credentials: true,
+      origin: [
+        "http://localhost:3000",
+        "http://localhost:4000",
+        "https://studio.apollographql.com",
+      ],
+    })
+  );
+
   app.use(
     session({
       name: "qid",
@@ -46,9 +50,8 @@ const main = async () => {
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 90, // 90 days
         httpOnly: true,
-        secure: __prod__,
-        sameSite: "lax",
-        domain: ORIGIN,
+        // secure: true,
+        // sameSite: "none",
       },
       saveUninitialized: false,
       secret: SESSION_SECRET!,
@@ -69,10 +72,16 @@ const main = async () => {
       validate: false,
     }),
     context: ({ req, res }) => ({ em: orm.em.fork(), req, res }),
+    plugins: [
+      ApolloServerPluginLandingPageLocalDefault({
+        embed: true,
+        includeCookies: true,
+      }),
+    ],
   });
 
   await apolloServer.start();
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(port, () => console.log(`App listening on port: ${port}`));
 };

@@ -8,6 +8,7 @@ import {
   Ctx,
   ObjectType,
   InputType,
+  Query,
 } from "type-graphql";
 import argon2 from "argon2";
 import {
@@ -43,10 +44,19 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  me(@Ctx() { req, em }: MyContext) {
+    if (!req.session.userId) {
+      return null;
+    }
+    const user = em.findOne(User, { id: req.session.userId });
+    return user;
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg("options") options: UserRegisterInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const errors = validateRegister(options);
     if (errors) {
@@ -61,8 +71,12 @@ export class UserResolver {
     try {
       await em.persistAndFlush(user);
     } catch (err) {
-      checkDbRegisterErrors(err);
+      const errors = checkDbRegisterErrors(err);
+      return { errors };
     }
+
+    // set user cookie
+    req.session.userId = user.id;
     return { user };
   }
 
@@ -71,9 +85,13 @@ export class UserResolver {
     @Arg("options") options: UserLoginInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(User, {
-      username: options.username.toLowerCase(),
-    });
+    const user = await em
+      .findOne(User, {
+        username: options.username.toLowerCase(),
+      })
+      .catch((err) => {
+        console.error(err);
+      });
 
     if (!user) {
       return {

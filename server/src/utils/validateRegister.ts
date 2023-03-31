@@ -12,19 +12,6 @@ export class UserRegisterInput {
 }
 
 export const validateRegister = (options: UserRegisterInput) => {
-  if (
-    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
-      options.email.toLowerCase()
-    ) === false
-  ) {
-    return [
-      {
-        field: "email",
-        message: "The email address you entered is not valid.",
-      },
-    ];
-  }
-
   if (options.username.length < 3) {
     return [
       {
@@ -65,6 +52,19 @@ export const validateRegister = (options: UserRegisterInput) => {
     ];
   }
 
+  if (
+    /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(
+      options.email.toLowerCase()
+    ) === false
+  ) {
+    return [
+      {
+        field: "email",
+        message: "The email address you entered is not valid.",
+      },
+    ];
+  }
+
   if (options.password.length < 8 || options.password.length > 65) {
     return [
       {
@@ -92,7 +92,6 @@ export const validateRegister = (options: UserRegisterInput) => {
 };
 
 export const checkDbRegisterErrors = (err: ValidationError) => {
-  console.log(err);
   if (err.constraint === "user_email_unique") {
     return [
       {
@@ -102,7 +101,7 @@ export const checkDbRegisterErrors = (err: ValidationError) => {
     ];
   }
 
-  if (err.constraint === "user_email_unique") {
+  if (err.constraint === "user_username_unique") {
     return [
       {
         field: "username",
