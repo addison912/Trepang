@@ -6,7 +6,7 @@ import { Provider, createClient, cacheExchange, fetchExchange } from "urql";
 
 const client = createClient({
   url: "http://localhost:4000/graphql",
-  exchanges: [cacheExchange, fetchExchange],
+  exchanges: [fetchExchange, cacheExchange],
   fetchOptions: {
     credentials: "include",
   },

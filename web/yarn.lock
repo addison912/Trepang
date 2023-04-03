@@ -2247,12 +2247,29 @@
   dependencies:
     "@types/node" "*"
 
+"@urql/core@>=4.0.0":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@urql/core/-/core-4.0.1.tgz#48d445a079e4d1bb87ad3fdba62a7b64ea88e72a"
+  integrity sha512-4KfEAjonkQbthkAAQzaodZlj34tN/E3uqyxg6I3Hc3QFe7Mvuw4xdduWJuVXBbr4+FWVy+XKjPxDlgiewHVjxQ==
+  dependencies:
+    "@0no-co/graphql.web" "^1.0.0"
+    wonka "^6.3.0"
+
 "@urql/core@^4.0.0":
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/@urql/core/-/core-4.0.0.tgz#9219771779fdd27b5f1727e4671875563b5450ab"
   integrity sha512-ZQEtL8tXSdZXvaTsF8GY5wYklqXYKfivQ72p98MfkVSWAjgNgwfHZ32wjUBxge99jGxNjD1vUmYYEINqQhEqtw==
   dependencies:
     "@0no-co/graphql.web" "^1.0.0"
+    wonka "^6.3.0"
+
+"@urql/exchange-graphcache@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@urql/exchange-graphcache/-/exchange-graphcache-6.0.1.tgz#4bb69ddb03489c3e6ffc09ff13e51d3fd3191b43"
+  integrity sha512-nJCQwem45p1nspbRrZz2oFjyHW6tufT6LQ1SvqE3CN1pLq3v72leZ6nfRMv4RCoh9IxFnv9hr0fn8DQSmQaB4w==
+  dependencies:
+    "@0no-co/graphql.web" "^1.0.0"
+    "@urql/core" ">=4.0.0"
     wonka "^6.3.0"
 
 "@whatwg-node/events@^0.0.2":
@@ -2885,6 +2902,11 @@ emoji-regex@^8.0.0:
   version "8.0.0"
   resolved "https://registry.yarnpkg.com/emoji-regex/-/emoji-regex-8.0.0.tgz#e818fd69ce5ccfcb404594f842963bf53164cc37"
   integrity sha512-MSjYzcWNOA0ewAHpz0MxpYFvwg6yjy1NG3xteoqz644VCo/RPgnr1/GGt+ic3iJTzQ8Eu3TdM14SawnVUmGE6A==
+
+emotion-theming@^11.0.0:
+  version "11.0.0"
+  resolved "https://registry.yarnpkg.com/emotion-theming/-/emotion-theming-11.0.0.tgz#821de3c9804cfe7bb5fda2dd12ad722a6c5bcff5"
+  integrity sha512-OhYpCGBjaLcD9c4ptwCr9SxHjfRTDqeqdzMobusJ+a/drlfnJ3AT9gmGKIhNHiXtr6626h6fsvLY22Or9CxUqw==
 
 error-ex@^1.3.1:
   version "1.3.2"
