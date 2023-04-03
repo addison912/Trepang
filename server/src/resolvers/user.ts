@@ -7,7 +7,6 @@ import {
   Arg,
   Ctx,
   ObjectType,
-  InputType,
   Query,
 } from "type-graphql";
 import argon2 from "argon2";
@@ -16,14 +15,8 @@ import {
   validateRegister,
   UserRegisterInput,
 } from "src/utils/validateRegister";
-
-@InputType()
-export class UserLoginInput {
-  @Field()
-  username: string;
-  @Field()
-  password: string;
-}
+import { loginErrors, UserLoginInput } from "src/utils/validateLogin";
+import { COOKIE_NAME } from "src/config";
 
 @ObjectType()
 class FieldError {
@@ -85,6 +78,9 @@ export class UserResolver {
     @Arg("options") options: UserLoginInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
+    if (loginErrors(options)) {
+      return { errors: loginErrors(options) };
+    }
     const user = await em
       .findOne(User, {
         username: options.username.toLowerCase(),
@@ -118,5 +114,21 @@ export class UserResolver {
     req.session.userId = user.id;
 
     return { user };
+  }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext) {
+    return new Promise((resolve) =>
+      req.session.destroy((err) => {
+        res.clearCookie(COOKIE_NAME);
+        if (err) {
+          console.log(err);
+          resolve(false);
+          return;
+        }
+
+        resolve(true);
+      })
+    );
   }
 }

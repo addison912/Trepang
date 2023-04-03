@@ -6,7 +6,7 @@ import session from "express-session";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { createClient } from "redis";
-import { PORT, SESSION_SECRET, __prod__ } from "./config";
+import { COOKIE_NAME, PORT, SESSION_SECRET, __prod__ } from "./config";
 import { HelloResolver, PostResolver, UserResolver } from "./resolvers";
 import RedisStore from "connect-redis";
 import { ApolloServerPluginLandingPageLocalDefault } from "apollo-server-core";
@@ -45,7 +45,7 @@ const main = async () => {
 
   app.use(
     session({
-      name: "qid",
+      name: COOKIE_NAME,
       store: redisStore,
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 90, // 90 days

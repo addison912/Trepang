@@ -1,5 +1,5 @@
 import { EntityManager, IDatabaseDriver, Connection } from "@mikro-orm/core";
-import { Request } from "express";
+import { Request, Response } from "express";
 import { Session } from "express-session";
 
 export type MyContext = {
